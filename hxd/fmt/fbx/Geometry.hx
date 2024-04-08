@@ -209,7 +209,20 @@ class Geometry {
 		var nrm = vect.getFloats();
 		// if by-vertice (Maya in some cases, unless maybe "Split per-Vertex Normals" is checked)
 		// let's reindex based on polygon indexes
-		if( root.get(layer+".MappingInformationType").props[0].toString() == "ByVertice" ) {
+		var mappingType = root.get(layer+".MappingInformationType").props[0].toString()
+		var referenceType = root.get(layer+".ReferenceInformationType").props[0].toString();
+		if ( mappingType == "ByVertice" ) {
+			var nout = [];
+			for( i in getPolygons() ) {
+				var vid = i;
+				if( vid < 0 ) vid = -vid - 1;
+				nout.push(nrm[vid * 3]);
+				nout.push(nrm[vid * 3 + 1]);
+				nout.push(nrm[vid * 3 + 2]);
+			}
+			nrm = nout;
+		} else if ( mappingType == "ByPolygonVertex" && referenceType == "IndexToDirect" ) {
+			// TODO
 			var nout = [];
 			for( i in getPolygons() ) {
 				var vid = i;
